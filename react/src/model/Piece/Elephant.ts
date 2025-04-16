@@ -9,10 +9,10 @@ export default class Elephant extends Piece {
 
   updatePossibleMoves(boardPieces: Piece[][]): void {
     const checkPossibleMoves: Position[] = [
-      new Position(this.position.row - 2, this.position.col - 2), // top left
-      new Position(this.position.row - 2, this.position.col + 2), // top right
-      new Position(this.position.row + 2, this.position.col - 2), // bottom left
-      new Position(this.position.row + 2, this.position.col + 2), // bottom right
+      { row: this.position.row - 2, col: this.position.col - 2 }, // top left
+      { row: this.position.row - 2, col: this.position.col + 2 }, // top right
+      { row: this.position.row + 2, col: this.position.col - 2 }, // bottom left
+      { row: this.position.row + 2, col: this.position.col + 2 }, // bottom right
     ];
 
     this.possibleMoves = checkPossibleMoves.filter((endPosition) => {
@@ -39,11 +39,15 @@ export default class Elephant extends Piece {
     if (this.isPositionHasAllyPiece(boardPieces, endPosition)) {
       return true;
     }
-    const middlePosition = new Position(
-      (this.position.row + endPosition.row) / 2,
-      (this.position.col + endPosition.col) / 2
-    );
+    const middlePosition = {
+      row: (this.position.row + endPosition.row) / 2,
+      col: (this.position.col + endPosition.col) / 2,
+    };
 
     return this.isPositionHasPiece(boardPieces, middlePosition);
+  }
+
+  getImagePath(): string {
+    return `/pieces/${this.color}-elephant.png`;
   }
 }

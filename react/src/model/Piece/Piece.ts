@@ -13,7 +13,6 @@ export enum PieceType {
 export default abstract class Piece {
   color: string;
   position: Position;
-  isAlive: boolean = true;
   possibleMoves: Position[] = [];
 
   constructor(color: string, position: Position) {
@@ -23,7 +22,7 @@ export default abstract class Piece {
 
   abstract getPieceType(): PieceType;
 
-  abstract updatePossibleMoves(boardPieces: Piece[][]): void;
+  abstract updatePossibleMoves(boardPieces: (Piece | null)[][]): void;
 
   isPositionHasPiece(boardState: Piece[][], position: Position): boolean {
     return !!boardState[position.row][position.col];
@@ -78,4 +77,6 @@ export default abstract class Piece {
       return position.row <= 4;
     }
   }
+
+  abstract getImagePath(): string;
 }

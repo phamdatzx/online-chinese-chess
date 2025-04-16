@@ -9,10 +9,10 @@ export default class Advisor extends Piece {
 
   updatePossibleMoves(boardState: Piece[][]): void {
     const targetPositionsList = [
-      new Position(this.position.row - 1, this.position.col - 1), // top left
-      new Position(this.position.row - 1, this.position.col + 1), // top right
-      new Position(this.position.row + 1, this.position.col - 1), // bottom left
-      new Position(this.position.row + 1, this.position.col + 1), // bottom right
+      { row: this.position.row - 1, col: this.position.col - 1 }, // top left
+      { row: this.position.row - 1, col: this.position.col + 1 }, // top right
+      { row: this.position.row + 1, col: this.position.col - 1 }, // bottom left
+      { row: this.position.row + 1, col: this.position.col + 1 }, // bottom right
     ];
 
     this.possibleMoves = targetPositionsList.filter((targetPosition) => {
@@ -33,5 +33,9 @@ export default class Advisor extends Piece {
       Math.abs(startPosition.row - endPosition.row) === 1 &&
       Math.abs(startPosition.col - endPosition.col) === 1
     );
+  }
+
+  getImagePath(): string {
+    return `/pieces/${this.color}-advisor.png`;
   }
 }

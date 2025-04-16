@@ -9,14 +9,14 @@ export default class Horse extends Piece {
 
   updatePossibleMoves(boardPieces: Piece[][]): void {
     const checkPossibleMoves: Position[] = [
-      new Position(this.position.row - 2, this.position.col - 1),
-      new Position(this.position.row - 2, this.position.col + 1),
-      new Position(this.position.row - 1, this.position.col - 2),
-      new Position(this.position.row - 1, this.position.col + 2),
-      new Position(this.position.row + 1, this.position.col - 2),
-      new Position(this.position.row + 1, this.position.col + 2),
-      new Position(this.position.row + 2, this.position.col - 1),
-      new Position(this.position.row + 2, this.position.col + 1),
+      { row: this.position.row - 2, col: this.position.col - 1 },
+      { row: this.position.row - 2, col: this.position.col + 1 },
+      { row: this.position.row - 1, col: this.position.col - 2 },
+      { row: this.position.row - 1, col: this.position.col + 2 },
+      { row: this.position.row + 1, col: this.position.col - 2 },
+      { row: this.position.row + 1, col: this.position.col + 2 },
+      { row: this.position.row + 2, col: this.position.col - 1 },
+      { row: this.position.row + 2, col: this.position.col + 1 },
     ];
 
     this.possibleMoves = checkPossibleMoves.filter((endPosition) => {
@@ -43,35 +43,39 @@ export default class Horse extends Piece {
   isBlocked(boardPieces: Piece[][], endPosition: Position): boolean {
     //way to top
     if (endPosition.row === this.position.row - 2) {
-      return this.isPositionHasPiece(
-        boardPieces,
-        new Position(this.position.row - 1, this.position.col)
-      );
+      return this.isPositionHasPiece(boardPieces, {
+        row: this.position.row - 1,
+        col: this.position.col,
+      });
     }
     //way to bottom
     if (endPosition.row === this.position.row + 2) {
-      return this.isPositionHasPiece(
-        boardPieces,
-        new Position(this.position.row + 1, this.position.row)
-      );
+      return this.isPositionHasPiece(boardPieces, {
+        row: this.position.row + 1,
+        col: this.position.row,
+      });
     }
 
     //way to left
     if (endPosition.col === this.position.col - 2) {
-      return this.isPositionHasPiece(
-        boardPieces,
-        new Position(this.position.row, this.position.col - 1)
-      );
+      return this.isPositionHasPiece(boardPieces, {
+        row: this.position.row,
+        col: this.position.col - 1,
+      });
     }
 
     //way to right
     if (endPosition.col === this.position.col + 2) {
-      return this.isPositionHasPiece(
-        boardPieces,
-        new Position(this.position.row, this.position.col + 1)
-      );
+      return this.isPositionHasPiece(boardPieces, {
+        row: this.position.row,
+        col: this.position.col + 1,
+      });
     }
 
     return true;
+  }
+
+  getImagePath(): string {
+    return `/pieces/${this.color}-horse.png`;
   }
 }

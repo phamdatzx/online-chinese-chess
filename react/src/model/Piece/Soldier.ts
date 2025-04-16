@@ -11,8 +11,8 @@ export default class Soldier extends Piece {
     if (this.isCrossedRiver()) {
       const checkPossibleMoves: Position[] = [
         this.getAheadPosition(), //ahead
-        new Position(this.position.row, this.position.col - 1), // left
-        new Position(this.position.row, this.position.col + 1), // right
+        { row: this.position.row, col: this.position.col - 1 }, // left
+        { row: this.position.row, col: this.position.col + 1 }, // right
       ];
 
       this.possibleMoves = checkPossibleMoves.filter((endPosition) => {
@@ -42,9 +42,9 @@ export default class Soldier extends Piece {
 
   getAheadPosition(): Position {
     if (this.color === "red") {
-      return new Position(this.position.row - 1, this.position.col);
+      return { row: this.position.row - 1, col: this.position.col };
     } else {
-      return new Position(this.position.row + 1, this.position.col);
+      return { row: this.position.row + 1, col: this.position.col };
     }
   }
 
@@ -55,5 +55,9 @@ export default class Soldier extends Piece {
     } else {
       return this.position.row >= 5;
     }
+  }
+
+  getImagePath(): string {
+    return `/pieces/${this.color}-pawn.png`;
   }
 }

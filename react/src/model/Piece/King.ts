@@ -1,6 +1,5 @@
 import Piece from "./Piece";
 import { PieceType } from "./Piece";
-import Position from "../Position";
 
 export default class King extends Piece {
   getPieceType(): PieceType {
@@ -9,10 +8,10 @@ export default class King extends Piece {
 
   updatePossibleMoves(boardState: Piece[][]): void {
     const targetPositionsList = [
-      new Position(this.position.row - 1, this.position.col), // top
-      new Position(this.position.row + 1, this.position.col), // bottom
-      new Position(this.position.row, this.position.col - 1), // left
-      new Position(this.position.row, this.position.col + 1), // right
+      { row: this.position.row - 1, col: this.position.col }, // top
+      { row: this.position.row + 1, col: this.position.col }, // bottom
+      { row: this.position.row, col: this.position.col - 1 }, // left
+      { row: this.position.row, col: this.position.col + 1 }, // right
     ];
 
     this.possibleMoves = targetPositionsList.filter((targetPosition) => {
@@ -26,5 +25,9 @@ export default class King extends Piece {
 
       return true;
     });
+  }
+
+  getImagePath(): string {
+    return `/pieces/${this.color}-king.png`;
   }
 }

@@ -1,36 +1,75 @@
+// App.tsx
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import LoginPage from "./components/Login/LoginPage";
+import Dashboard from "./components/Dashboard/Dashboard";
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import { testBoard } from "./TestBoard.ts";
+import Chessboard from "./components/ChessBoard/ChessBoard";
+import axiosInstance from "./config/axiosInstance";
+import Cookies from "js-cookie";
 
-function App() {
-  const [count, setCount] = useState(0);
-  testBoard();
+const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  const handleLogin = (email: string, password: string) => {
+    axiosInstance
+      .post("/auth/login", { username: email, password })
+      .then((response) => {
+        console.log("Login successful", response.data);
+        Cookies.set("accessToken", response.data.accessToken, {
+          expires: 7,
+          secure: true,
+        });
+        Cookies.set("refreshToken", response.data.refreshToken, {
+          expires: 7,
+          secure: true,
+          path: "/auth/refresh-token",
+        });
+        setIsAuthenticated(true);
+      })
+      .catch((error) => {
+        console.error("Login failed", error);
+      });
+  };
+
+  const handleGoogleLogin = () => {
+    // Implement Google OAuth login logic
+    console.log("Google login clicked");
+    setIsAuthenticated(true);
+  };
+
+  const handleFacebookLogin = () => {
+    // Implement Facebook OAuth login logic
+    console.log("Facebook login clicked");
+    setIsAuthenticated(true);
+  };
+
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Routes>
+      <Route
+        path="/login"
+        element={
+          isAuthenticated ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <LoginPage
+              onLogin={handleLogin}
+              onGoogleLogin={handleGoogleLogin}
+              onFacebookLogin={handleFacebookLogin}
+            />
+          )
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route path="/chess" element={<Chessboard />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
+    </Routes>
   );
-}
+};
 
 export default App;
