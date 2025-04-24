@@ -1,75 +1,29 @@
-// App.tsx
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "./components/Login/LoginPage";
-import Dashboard from "./components/Dashboard/Dashboard";
-import { useState } from "react";
-import Chessboard from "./components/ChessBoard/ChessBoard";
-import axiosInstance from "./config/axiosInstance";
-import Cookies from "js-cookie";
+import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import GamePage from "./pages/GamePage";
+import ProfilePage from "./pages/ProfilePage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-
-  const handleLogin = (email: string, password: string) => {
-    axiosInstance
-      .post("/auth/login", { username: email, password })
-      .then((response) => {
-        console.log("Login successful", response.data);
-        Cookies.set("accessToken", response.data.accessToken, {
-          expires: 7,
-          secure: true,
-        });
-        Cookies.set("refreshToken", response.data.refreshToken, {
-          expires: 7,
-          secure: true,
-          path: "/auth/refresh-token",
-        });
-        setIsAuthenticated(true);
-      })
-      .catch((error) => {
-        console.error("Login failed", error);
-      });
-  };
-
-  const handleGoogleLogin = () => {
-    // Implement Google OAuth login logic
-    console.log("Google login clicked");
-    setIsAuthenticated(true);
-  };
-
-  const handleFacebookLogin = () => {
-    // Implement Facebook OAuth login logic
-    console.log("Facebook login clicked");
-    setIsAuthenticated(true);
-  };
-
+function App() {
   return (
     <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/game" element={<GamePage />} />
       <Route
-        path="/login"
+        path="/profile"
         element={
-          isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
-          ) : (
-            <LoginPage
-              onLogin={handleLogin}
-              onGoogleLogin={handleGoogleLogin}
-              onFacebookLogin={handleFacebookLogin}
-            />
-          )
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
         }
       />
-      <Route
-        path="/dashboard"
-        element={
-          isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />
-        }
-      />
-      <Route path="/chess" element={<Chessboard />} />
-      <Route path="/" element={<Navigate to="/login" replace />} />
     </Routes>
   );
-};
+}
 
 export default App;

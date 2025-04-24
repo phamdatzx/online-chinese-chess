@@ -5,8 +5,11 @@ import com.pixelwave.spring_boot.DTO.auth.LoginResponse;
 import com.pixelwave.spring_boot.DTO.auth.RefreshTokenDTO;
 import com.pixelwave.spring_boot.DTO.auth.RegisterRequest;
 import com.pixelwave.spring_boot.service.AuthenticationService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,10 @@ public class AuthenticateController {
 
   private final AuthenticationService service;
 
+    @Value("${refresh-token-expiry-time}")
+    private Integer refreshTokenExpiryTime ;
+
+
   @PostMapping("/register")
   public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest registerRequest) {
     service.register(registerRequest);
@@ -34,8 +41,19 @@ public class AuthenticateController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-    return ResponseEntity.ok(service.login(loginRequest));
+  public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+      var loginResponse = service.login(loginRequest);
+      String refreshToken = loginResponse.getRefreshToken();
+
+      Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
+      refreshCookie.setHttpOnly(true);
+      refreshCookie.setSecure(true);
+      refreshCookie.setPath("/auth/refresh-token"); // restrict refresh token to refresh endpoint
+      refreshCookie.setMaxAge(refreshTokenExpiryTime);
+
+      response.addCookie(refreshCookie);
+      loginResponse.setRefreshToken(null);
+      return ResponseEntity.ok(loginResponse);
   }
 
   @PostMapping("/refresh-token")
